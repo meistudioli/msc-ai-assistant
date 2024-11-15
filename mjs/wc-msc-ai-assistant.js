@@ -769,7 +769,7 @@ export class MscAiAssistant extends HTMLElement {
   disconnectedCallback() {
     this.#nodes.assistant.togglePopover(false);
 
-    if (this.#data?.controller) {
+    if (this.#data.controller?.abort) {
       this.#data.controller.abort();
     }
 
