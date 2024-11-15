@@ -1,0 +1,26 @@
+{
+  "name": "msc-ai-assistant",
+  "version": "1.0.0",
+  "description": "<msc-ai-assistant /> is a web component based on Chrome Built-in AI Prompt API. Web developers could use <msc-ai-assistant /> to help user consult anything they like to know.",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meistudioli/msc-ai-assistant.git"
+  },
+  "keywords": [
+    "web",
+    "front-end",
+    "web component",
+    "built-in AI",
+    "AI on Chrome"
+  ],
+  "author": "Paul Li",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/meistudioli/msc-ai-assistant/issues"
+  },
+  "homepage": "https://github.com/meistudioli/msc-ai-assistant#readme"
+}

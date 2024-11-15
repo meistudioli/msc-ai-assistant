@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Web Component: &lt;msc-ai-assistant /> - a web component based on Chrome Built-in AI Prompt API</title>
+<meta name="description" content="msc-ai-assistant is a web component based on Chrome Built-in AI Prompt API. Web developers could use msc-ai-assistant to help user consult anything they like to know. The following demo is a front-end skill consulting. User could press 「SUMMON ASSISTANT」 and go." />
+<script type="module" src="mjs/wc-msc-ai-assistant.js"></script>
+<link rel="stylesheet" href="https://blog.lalacube.com/mei/css/layers/input-set.css">
+<link rel="stylesheet" href="https://blog.lalacube.com/mei/css/layers/radio-set.css">
+<link rel="stylesheet" href="https://blog.lalacube.com/mei/css/layers/buttons.css">
+<style>
+/* reset */
+body,div,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,legend,input,textarea,p,article,aside,figcaption,figure,nav,section,mark,audio,video,main{margin:0;padding:0}
+article,aside,figcaption,figure,nav,section,main{display:block}
+fieldset,img{border:0}
+address,caption,cite,em,strong{font-style:normal;font-weight:400}
+ol,ul{list-style:none}
+caption{text-align:left}
+h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:400}
+abbr{border:0;font-variant:normal}
+input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}
+body{-webkit-text-size-adjust:none}
+select,input,button,textarea{font:100% arial,helvetica,clean,sans-serif;}
+del{font-style:normal;text-decoration:none}
+pre{font-family:monospace;line-height:100%}
+progress{-webkit-appearance:none;appearance:none;overflow:hidden;border:0 none;}
+
+/* page */
+:root {
+  --bd-bg: #fff;
+  --subject-text: #000;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bd-bg: #121212;
+    --subject-text: #e8eaed;
+  }
+}
+
+/* defaults */
+:root {
+  --ON: initial;
+  --OFF: ;
+  
+  /* fuji */
+  --white: 255 255 255;
+  --marshmallow: 245 248 250;
+  --grey-hair: 240 243 245;
+  --dirty-seagull: 224 228 233;
+  --pebble: 199 205 210;
+  --bob: 176 185 193;
+  --gandalf: 151 158 168;
+  --shark: 130 138 147;
+  --dolphin: 110 119 128;
+  --battleship: 91 99 106;
+  --charcoal: 70 78 86;
+  --ramones: 44 54 63;
+  --batcave: 35 42 49;
+  --inkwell: 29 34 40;
+  --midnight: 16 21 24;
+  --black: 0 0 0;
+  --watermelon: 255 82 87;
+  --solo-cup: 235 15 41;
+  --malibu: 255 0 128;
+  --barney: 204 0 140;
+  --mimosa: 255 211 51;
+  --turmeric: 255 167 0;
+  --masala: 255 139 18;
+  --cheetos: 253 97 0;
+  --carrot-juice: 255 82 13;
+  --mulah: 26 197 103;
+  --bonsai: 0 135 81;
+  --spirulina: 0 160 160;
+  --sea-foam: 17 211 205;
+  --peeps: 125 203 255;
+  --sky: 18 169 255;
+  --dory: 15 105 255;
+  --scooter: 0 99 235;
+  --cobalt: 0 58 188;
+  --denim: 26 13 171;
+  --blurple: 93 94 255;
+  --hendrix: 248 244 255;
+  --thanos: 144 124 255;
+  --starfish: 119 89 255;
+  --hulk-pants: 126 31 255;
+  --grape-jelly: 96 1 210;
+  --mulberry: 80 21 176;
+  --malbec: 57 0 125;
+
+  /* property */
+  --theme-gradient-start: 255 231 98;
+  --theme-gradient-end: 252 218 25;
+  --anchor-green: 58 191 186;
+  --mark-buynow: 0 120 255;
+  --mark-bidding: 255 139 18;
+  --mark-metro-express: 255 77 82;
+  --heart-red: 253 79 87;
+
+  /* shadow */
+  --shadow-elevations-1: 0 1px 0 rgba(var(--dirty-seagull)), 0 0 1px rgba(var(--black)/0);
+  --shadow-elevations-2: 0 0 1px rgba(var(--black)/.1), 0 2px 4px rgba(var(--black)/.08);
+  --shadow-elevations-3: 0 0 1px rgba(var(--black)/.08), 0 4px 8px rgba(var(--black)/.1);
+  --shadow-elevations-4: 0 0 2px rgba(var(--black)/.05), 0 4px 16px rgba(var(--black)/.2);
+  --shadow-elevations-5: 0 0 16px rgba(var(--black)/.05), 0 32px 32px 20px rgba(var(--black)/.4);
+
+  /* safe-area */
+  --el:0;
+  --et:0;
+  --eb:0;
+  --basis-padding: 1em;
+  --spl: calc(var(--el) + var(--basis-padding));
+  --spb: calc(var(--eb) + var(--basis-padding));
+
+  /* icons */
+  --icon-home: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxNicgaGVpZ2h0PScxNicgdmlld0JveD0nMCAwIDMyIDMyJz48cGF0aCBmaWxsPScjZmZmJyBkPSdNMTYuMTUzIDMuMjI0TDAgMTYuOTYyaDQuMzE0djExLjgxNGg5Ljg3di04LjAwM2gzLjkzNHY4LjAwM2g5Ljg0VjE2Ljk2MkgzMicvPjwvc3ZnPg==) no-repeat 50% 50%/16px 16px;
+  --icon-cart: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyNCcgaGVpZ2h0PScyNCc+PHBhdGggZmlsbD0nI2ZmZicgZD0nTTkuNSAxMC41SDE2Yy41NTIgMCAxIC40NDQgMSAxIDAgLjU1Mi0uNDQ1IDEtMSAxSDkuNWMtLjU1MiAwLTEtLjQ0NC0xLTEgMC0uNTUyLjQ0NS0xIDEtMXpNMTAgMjFhMiAyIDAgMTAtMy45OTktLjAwMUEyIDIgMCAwMDEwIDIxem05LjUgMGEyIDIgMCAxMC0zLjk5OS0uMDAxQTIgMiAwIDAwMTkuNSAyMXpNNC40OTYgMkg0LjVjLjU1Mi4wMDUuOTk4LjQ0NSAxIC45OTZMNyAxNWgxMS41TDIwIDQuOTk2UzIwLjA4MiA0IDIxIDRjLjkxNSAwIDEgLjc2MiAxIDFsLTEuNSAxMS4wMDRjMCAuNTUtLjQ0OC45OTYtMSAuOTk2SDZhMSAxIDAgMDEtMS0uOTk2TDMuNjE2IDRIMS4wMUMuNDUgNCAwIDMuNTU2IDAgM2MwLS41NTIuNDUtMSAxLjAxLTFoMy40ODV6TTkuNSA1LjVIMTZjLjU1MiAwIDEgLjQ0NCAxIDEgMCAuNTUyLS40NDUgMS0xIDFIOS41Yy0uNTUyIDAtMS0uNDQ0LTEtMSAwLS41NTIuNDQ1LTEgMS0xeicvPjwvc3ZnPg==) no-repeat 0% 50%/contain;
+  --icon-order: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyNCcgaGVpZ2h0PScyNCc+PHBhdGggZmlsbD0nI2ZmZicgZD0nTTE4LjYxIDE5LjI1NmwtLjY0Mi0uNDYtMS4yMTgtLjg3Ny0xLjE0My45NjctMS4xNi45ODQtMS4yMzMtMS4wMDMtMS4yMTQtLjk5LTEuMjE0Ljk5LTEuMjMgMS4wMDQtMS4xNjUtLjk4NC0xLjE0My0uOTY3LTEuMjE4Ljg3NS0uNjQuNDZWMy44MzZoMTMuMjJ2MTUuNDJ6TTQuNDQ1IDJhLjk0Ni45NDYgMCAwMC0uOTQ0Ljk0djE4LjEzNmMwIC41NC40NTYuOTIuOTQ4LjkyLjE3IDAgLjM0OC0uMDQ2LjUxLS4xNDhsMi4xOTMtMS41NzZMOC45NyAyMS44MWEuOTc0Ljk3NCAwIDAwMS4xMjcuMDJMMTIgMjAuMjczbDEuOTA2IDEuNTU1YS45NzIuOTcyIDAgMDAxLjEyNy0uMDJsMS44MTQtMS41MzggMi4xOTYgMS41NzZjLjE2My4xMDIuMzQuMTQ4LjUxLjE0OC40OTIgMCAuOTQ3LS4zOC45NDctLjkyVjIuOTRhLjk0NS45NDUgMCAwMC0uOTQ0LS45NEg0LjQ0NHptMTEuMzMzIDEwLjExM2MuNTIyIDAgLjk0NS0uNDEuOTQ1LS45MThzLS40MjMtLjkyLS45NDUtLjkySDguMjIzYS45MzIuOTMyIDAgMDAtLjk0NC45MmMwIC41MDcuNDIuOTE4Ljk0My45MThoNy41NTR6TTExLjA1NSA4LjQ0Yy4yNjIgMCAuOTQ1LS4yMjQuOTQ1LS45MiAwLS41MDctLjQyMy0uOTE3LS45NDUtLjkxN0g4LjIyM2MtLjUyMiAwLS45NDQuNDEtLjk0NC45MThzLjQyLjkyLjk0My45MmgyLjgzMnptNC43MjIgNy4zNDdjLjUyMiAwIC45NDUtLjQxLjk0NS0uOTE4IDAtLjUxLS40MjMtLjkyLS45NDUtLjkySDguMjIzYS45My45MyAwIDAwLS45NDQuOTJjMCAuNTA2LjQyLjkxNy45NDMuOTE3aDcuNTU0eicvPjwvc3ZnPg==) no-repeat 0% 50%/contain;
+  --icon-close: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyNCcgaGVpZ2h0PScyNCc+PHBhdGggZmlsbD0nIzk3OWVhOCcgZD0nTTEyIDEwLjU4OEw2LjcwMiA1LjI5YTEgMSAwIDAwLTEuNDA4LjAwNC45OTMuOTkzIDAgMDAtLjAwMyAxLjQwOEwxMC41ODggMTJsLTUuMjk3IDUuMjk3YTEgMSAwIDAwLjAwMyAxLjQwOC45OTMuOTkzIDAgMDAxLjQwOC4wMDRMMTIgMTMuNDExbDUuMjk4IDUuMjk4YS45OTkuOTk5IDAgMDAxLjQxMS0xLjQxMkwxMy40MTIgMTJsNS4yOTctNS4yOThhMSAxIDAgMDAtLjAwMy0xLjQwOC45OTUuOTk1IDAgMDAtMS40MDgtLjAwNEwxMiAxMC41ODh6Jy8+PC9zdmc+) no-repeat 50% 50%/24px 24px;
+  --icon-arrow-left: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyNCcgaGVpZ2h0PScyNCc+PHBhdGggZD0nTTEwLjgwMiAxMmw0LjkwNi00LjgzNGEuOTczLjk3MyAwIDAwLS4wMDMtMS4zNzguOTk0Ljk5NCAwIDAwLTEuMzk3LS4wMDNMOCAxMi4wMDFsNi4zMSA2LjIxN2MuMzc4LjM3MyAxLjAxLjM4IDEuMzk3LS4wMDJhLjk2Mi45NjIgMCAwMC4wMDMtMS4zNzhsLTQuOTA4LTQuODM3eicgZmlsbD0nI2ZmZicgZmlsbC1ydWxlPSdldmVub2RkJy8+PC9zdmc+) no-repeat 50% 50%/24px 24px;
+  --icon-arrow-right: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyNCcgaGVpZ2h0PScyNCc+PHBhdGggZD0nTTEzLjE5NyAxMkw4LjI5MSA3LjE2NmEuOTczLjk3MyAwIDAxLjAwMy0xLjM3OC45OTQuOTk0IDAgMDExLjM5Ny0uMDAzbDYuMzA4IDYuMjE2LTYuMzEgNi4yMTdjLS4zNzguMzczLTEuMDEuMzgtMS4zOTctLjAwMmEuOTYyLjk2MiAwIDAxLS4wMDMtMS4zNzhsNC45MDgtNC44Mzd6JyBmaWxsPScjZmZmJyBmaWxsLXJ1bGU9J2V2ZW5vZGQnLz48L3N2Zz4=) no-repeat 50% 50%/24px 24px;
+
+  /* mask */
+  --mask-chevron-next: path('M13.197 12 8.29 7.167a.971.971 0 0 1 .003-1.378.995.995 0 0 1 1.397-.003L16 12.001l-6.31 6.217a1.004 1.004 0 0 1-1.397-.002.962.962 0 0 1-.003-1.378l4.908-4.837Z');
+
+  /* animation */
+  --transition-timing-function: cubic-bezier(.4,0,.2,1);
+
+  /* pages */
+  --view: '';
+  --max-width: 100%;
+  /*--section-padding: 0 1em;*/
+  --section-padding: 0 calc(1em + var(--el));
+  --border-radius: .5em;
+  --direction-factor: 1;
+  --margin-block-gap: 1.25em;
+
+  --main-bgc: #f1f1f5;
+  --module-bgc: rgba(var(--white));
+  --text-color: #232a31;
+
+  /* modules */
+  --nav-inline-size: 13em;
+  --intro-text: #5f6368;
+}
+
+@supports (bottom:env(safe-area-inset-top)) {
+  :root {
+    --el: env(safe-area-inset-left);
+    --et: env(safe-area-inset-top);
+    --eb: env(safe-area-inset-bottom);
+  }
+
+  @supports (bottom:max(.75em,1px)) {
+    :root {
+      --spl: max(var(--basis-padding), var(--el));
+      --spb: max(var(--basis-padding), var(--eb));
+    }
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --intro-text: #9aa0a6;
+  }
+}
+
+/* page */
+html{font-family:system-ui,sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;font-size:16px;background-color:var(--main-bgc);scroll-behavior:smooth;}
+html[dir='rtl']{--direction-factor:-1;}
+#bd{margin:0 auto;}
+a,a:hover{text-decoration:none;}
+a{color:rgba(var(--anchor-green));}
+.center-module{max-inline-size:var(--max-width);margin:0 auto;box-sizing:border-box;padding:var(--section-padding);}
+.center-module--main>*{margin-block-start:var(--margin-block-gap);}
+
+.absolute-center{position:absolute;top:0;left:0;bottom:0;right:0;margin:auto;}
+.text-overflow{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.text-overflow--ltr-start{direction:rtl;text-align:start;}
+.text-overflow--rtl{direction:rtl;text-align:end;}
+.line-fadeout{position:relative;}
+.line-fadeout:after{position:absolute;content:'';text-align:right;bottom:0;right:0;width:70%;height:var(--fadeout-h, 1.2em);background:linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,1));}
+.line-clampin{display:-webkit-box;-webkit-line-clamp:var(--line-clamp,2);-webkit-box-orient:vertical;text-overflow:ellipsis;overflow:hidden;}
+.stuff{text-indent:100%;white-space:nowrap;overflow:hidden;}
+.aspect-ratio{position:relative;width:100%;--w:4;--h:3;}
+.aspect-ratio:before{content:'';width:100%;padding-top:calc(var(--h) * 100% / var(--w));display:block;}
+.aspect-ratio .content{position:absolute;top:0;left:0;right:0;bottom:0;}
+.force-radius{overflow:hidden;transform:translate3d(0,0,0);border-radius:var(--r,8px);}
+.contain{object-fit:contain;}
+.cover{object-fit:cover;}
+.overscrolling{-webkit-overflow-scrolling:touch;overflow:hidden;overflow-y:scroll;overscroll-behavior:contain;}
+.vanquish{position:absolute;left:0;top:0;width:1px;height:1px;overflow:hidden;}
+.flex-center{display:flex;justify-content:center;align-items:center;}
+
+/* media query */
+@media screen and (max-width: 767px) {
+  :root {
+    --view: 'mobile';
+    --section-padding: 0;
+    --border-radius: 0;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  :root {
+    --view: 'tablet';
+    --max-width: 1023px;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  :root {
+    --view: 'desktop';
+    --max-width: 1279px;
+  }
+}
+
+@media screen and (min-width: 1280px) {
+  :root {
+    --view: 'desktop max';
+    --max-width: 1280px;
+    --section-padding: 0 1.5em;
+  }
+}
+
+/* setting-form */
+.setting-form {
+  --background-color: #dce2f0;
+  --subject-inline-size: 150px;
+
+  --il-align-item: center;
+  --il-pair-gap: 6px;
+
+  --a11y-block-link-expand: 6px;
+  --a11y-block-link-border-radius: 32px;
+
+  inline-size: min(100%,800px);
+  box-sizing: border-box;
+  margin-block: 2.5em;
+  margin-inline: auto;
+  display: block;
+
+  .demo-wrap {
+    inline-size: 100%;
+    aspect-ratio: 2/1.5;
+    /*background-color: var(--background-color);*/
+    border-radius: .5em;
+    display: grid;
+    place-content: center;
+  }
+
+  .adjustments {
+    .adjustments__row {
+      display: flex;
+      align-items: flex-start;
+      gap: 1em;
+
+      &:has(select) {
+        align-items: center;
+      }
+
+      &:nth-child(n + 2 of .adjustments__row) {
+        margin-block-start: .75em;
+      }
+
+      .adjustments__row__subject {
+        inline-size: var(--subject-inline-size);
+        color: var(--subject-text);
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        &::before {
+          inline-size: 6px;
+          aspect-ratio: 1/1;
+          border-radius: 4px;
+          background-color: currentColor;
+          content: '';
+        }
+      }
+
+      .adjustments__row__content {
+        color: var(--intro-text);
+        min-inline-size: 0;
+        flex-grow: 1;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1em;
+      }
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    --background-color: rgba(var(--midnight));
+
+    .radio-set,.input-set {
+      --default-accent-color: rgba(75 168 248);
+    }
+  }
+}
+
+/* il-pair */
+.il-pair {
+  --gap: var(--il-pair-gap, .75em);
+  --align-items: var(--il-align-item, flex-start);
+
+  display: flex;
+  align-items: var(--align-items);
+  gap: var(--gap);
+
+  > :first-child {
+    flex-shrink: 0;
+  }
+
+  > :last-child {
+    line-height: 20px;
+  }
+
+  &.a11y-block-link {
+    display: flex;
+  }
+}
+
+html,body{font-family:system-ui,sans-serif;text-size-adjust:100%;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;font-size:16px;}
+#hd,#ft{display:none;}
+body{position:relative;inline-size:100vw;block-size:100vh;margin:0;background:var(--bd-bg);}
+
+.wrap{inline-size:100%;max-inline-size:min(800px, calc(100% - 2em));box-sizing:border-box;}
+.demo-container {
+  inline-size: 100%;
+  margin-inline: auto;
+  margin-block: 4em 2em;
+}
+
+.button__wrap {
+  --background-color: rgba(220 226 240);
+
+  inline-size: min(100%, 800px);
+  aspect-ratio: 2/.6;
+  margin-inline: auto;
+  margin-block: 4em 2em;
+  display: grid;
+  place-content: center;
+  border-radius: 1em;
+  background-color: var(--background-color);
+
+  @media (prefers-color-scheme: dark) {
+    --background-color: rgba(29 34 40);
+  }
+
+  .buttons[data-type='secondary1'] {
+    @media (prefers-color-scheme: dark) {
+      --default-text-color: rgba(75 168 248);
+    }
+  }
+}
+
+.setting-form {
+  input[type=range] {
+    inline-size: min(100%, 310px);
+    margin-block-start: 2px;
+    accent-color: #1b6efb;
+  }
+
+  .adjustments {
+    .adjustments__row--center {
+      align-items: center;
+    }
+  }
+
+  .input-set:has([type=number]) {
+    inline-size: 80px;
+  }
+
+  .adjustments__row__content:has([type=number]) {
+    display: flex;
+    align-items: center;
+  }
+}
+
+msc-ai-assistant {
+  --msc-ai-assistant-inline-size: 400px;
+  --msc-ai-assistant-block-size: 600px;
+  --msc-ai-assistant-inset-inline-start: calc(100% - 16px - var(--msc-ai-assistant-inline-size));
+  --msc-ai-assistant-inset-block-start: calc(100% - 16px - var(--msc-ai-assistant-block-size));
+  --msc-ai-assistant-box-shadow: 0 0 8px rgba(0 0 0/.2);
+
+  @media (prefers-color-scheme: dark) {
+    --msc-ai-assistant-background-color: rgba(30 31 32);
+    --msc-ai-assistant-head-text-color: rgba(255 255 255);
+    --msc-ai-assistant-line-color: rgba(91 99 106);
+    --msc-ai-assistant-content-text-color: rgba(255 255 255);
+    --msc-ai-assistant-content-highlight-text-color: rgba(227 229 228);
+    --msc-ai-assistant-content-highlight-background-color: rgba(51 53 55);
+    --msc-ai-assistant-content-group-background-color: rgba(40 42 44);
+
+    --msc-ai-assistant-close-hover-background-color: rgba(51 52 55);
+    --msc-ai-assistant-close-icon-color: rgba(130 138 147);
+
+    --msc-ai-assistant-input-text-color: rgba(255 255 255);
+    --msc-ai-assistant-input-placeholder-text-color: rgba(189 193 197);
+    --msc-ai-assistant-form-background-color: rgba(39 42 44);
+    --msc-ai-assistant-form-focus-background-color: rgba(50 53 55);
+
+    --msc-ai-assistant-submit-icon-color: rgba(226 229 228);
+    --msc-ai-assistant-submit-hover-background-color: rgba(255 255 255/.07);
+
+    --msc-ai-assistant-box-shadow: 0 0 8px rgba(255 255 255/.2);
+  }
+}
+
+msc-ai-assistant:not(:defined){visibility:hidden;}
+</style>
+</head>
+
+<body class="flex-center">
+<div class="wrap">
+  <div class="demo-container">
+    <div class="button__wrap">
+      <button
+        type="button"
+        class="buttons"
+        data-type="secondary1"
+        data-size="large"
+      >
+        SUMMON ASSISTANT
+      </button>
+    </div>
+  </div>
+
+  <form class="setting-form">
+    <ul class="adjustments">
+      <li class="adjustments__row">
+        <p class="adjustments__row__subject">Assistant Role：</p>
+        <div class="adjustments__row__content">
+          <div class="input-set input-set--hide-label">
+            <select name="role">
+              <option value="-1" disabled>Select role</option>
+              <hr />
+              <option value="front-end-expert">front-end expert</option>
+              <option value="top-sales">top sales</option>
+              <option value="translator">translator</option>
+              <option value="writer">writer</option>
+              <option value="gamer">gamer</option>
+              <option value="none">none</option>
+            </select>
+            <label class="input-set__label">
+              <span class="input-set__label__span">systemPrompt</span>
+            </label>
+          </div>
+        </div>
+      </li>
+
+      <li class="adjustments__row">
+        <p class="adjustments__row__subject">temperature：</p>
+        <div class="adjustments__row__content">
+          <input type="range" min="1" max="10" name="temperature" value="8" step="1" />
+        </div>
+      </li>
+
+      <li class="adjustments__row">
+        <p class="adjustments__row__subject">position：</p>
+        <div class="adjustments__row__content">
+          <div class="input-set input-set--hide-label">
+            <select name="position">
+              <option value="-1" disabled>Select position</option>
+              <hr />
+              <option value="start-start">left-top corner</option>
+              <option value="start-end">right-top corner</option>
+              <option value="end-end" selected>right-bottom corner</option>
+              <option value="end-start">left-bottom corner</option>
+            </select>
+            <label class="input-set__label">
+              <span class="input-set__label__span">position</span>
+            </label>
+          </div>
+        </div>
+      </li>
+
+      <li class="adjustments__row adjustments__row--center">
+        <p class="adjustments__row__subject">inline-size：</p>
+        <div class="adjustments__row__content">
+          <div class="input-set input-set--hide-label">
+            <input name="inline-size" type="number" value="400" min="100" placeholder="inline-size" />
+            <label class="input-set__label">
+              <span class="input-set__label__span">inline-size</span>
+            </label>
+          </div>
+          px
+        </div>
+      </li>
+
+      <li class="adjustments__row adjustments__row--center">
+        <p class="adjustments__row__subject">block-size：</p>
+        <div class="adjustments__row__content">
+          <div class="input-set input-set--hide-label">
+            <input name="block-size" type="number" value="600" min="100" placeholder="inline-size" />
+            <label class="input-set__label">
+              <span class="input-set__label__span">block-size</span>
+            </label>
+          </div>
+          px
+        </div>
+      </li>
+
+      <li class="adjustments__row adjustments__row--center">
+        <p class="adjustments__row__subject">PiP：</p>
+        <div class="adjustments__row__content">
+          <div class="il-pair a11y-block-link">
+            <div class="radio-set">
+              <input id="pip-0" type="radio" name="pip" value="yes" />
+              <label class="radio-set__label" for="pip-0"></label>
+            </div>
+
+            <label for="pip-0">
+              YES
+            </label>
+          </div>
+
+          <div class="il-pair a11y-block-link">
+            <div class="radio-set">
+              <input id="pip-1" type="radio" name="pip" value="no" checked />
+              <label class="radio-set__label" for="pip-1"></label>
+            </div>
+
+            <label for="pip-1">
+              NO
+            </label>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </form>
+
+  <msc-ai-assistant class="my-ai-assistant">
+    <script type="application/json">
+      {
+        "config": {
+          "systemPrompt": "You are a front-end engineer and very good at CSS, HTML and JavaScript.",
+          "temperature": 0.8,
+          "topK": 3
+        },
+        "l10n": {
+          "subject": "AI Assistant (front-end)",
+          "placeholder": "Ask Gemini"
+        }
+      }
+    </script>
+  </msc-ai-assistant>
+</div>
+
+<script type="module">
+import { _wcl } from './mjs/common-lib.js';
+
+const mappings = {
+  'front-end-expert': {
+    prompts: 'You are a front-end engineer and very good at CSS, HTML and JavaScript.',
+    subject: 'AI Assistant (front-end)'
+  },
+  'top-sales': {
+    prompts: 'You are a top sales and very good at product consulting. You are also good at rewriting product information and make them more vivid.',
+    subject: 'AI Assistant (top sales)'
+  },
+  'translator': {
+    prompts: 'You are a translator and very good at translate English to Traditional Chinese or Traditional Chinese to English.',
+    subject: 'AI Assistant (translator)'
+  },
+  'writer': {
+    prompts: 'You are a writer and very good at rewriting article and make them more vivid.',
+    subject: 'AI Assistant (writer)'
+  },
+  'gamer':{
+    prompts: 'You are a gamer and very good at playing PC games and video games. You also know to all games\' background and stories.',
+    subject: 'AI Assistant (gamer)'
+  },
+  'none': {
+    prompts: '',
+    subject: 'AI Assistant'
+  }
+};
+
+customElements.whenDefined('msc-ai-assistant').then(() => {
+  const assistant = document.querySelector('msc-ai-assistant');
+  const form = document.querySelector('.setting-form');
+  const button = document.querySelector('.button__wrap button');
+
+  // detect Built-in AI ready or not
+  if (assistant.available === 'no') {
+    button.textContent = 'No Built-in AI support';
+    form.remove();
+    return;
+  }
+
+  const getAxis = (inlineSize, blockSize, axis) => {
+    let axisX, axisY;
+
+    switch (axis) {
+      case 'start-start': {
+        axisX = '16px';
+        axisY = '16px';
+        break;
+      }
+
+      case 'start-end': {
+        axisX = `calc(100% - 16px - ${inlineSize})`;
+        axisY = '16px';
+        break;
+      }
+
+      case 'end-end': {
+        axisX = `calc(100% - 16px - ${inlineSize})`;
+        axisY = `calc(100% - 16px - ${blockSize})`;
+        break;
+      }
+
+      case 'end-start': {
+        axisX = '16px';
+        axisY = `calc(100% - 16px - ${blockSize})`;
+        break;
+      }
+    }
+
+    return { axisX, axisY };
+  };
+
+  const handler = (evt) => {
+    const { type, target, detail } = evt;
+
+    switch (type) {
+      case 'click': {
+        assistant.show();
+        break;
+      }
+
+      case 'input': {
+        const formData = new FormData(form);
+        const fd = Object.fromEntries(formData.entries());
+        const inlineSize = `${fd['inline-size']}px`;
+        const blockSize = `${fd['block-size']}px`;
+        const { axisX, axisY } = getAxis(inlineSize, blockSize, fd['position']);
+
+        assistant.config = {
+          systemPrompt: mappings[fd.role]?.prompts || '',
+          temperature: +fd.temperature / 10
+        };
+
+        assistant.l10n = {
+          subject: mappings[fd.role]?.subject || 'AI Assistant',
+        };
+
+        _wcl.addStylesheetRules(
+          '.my-ai-assistant',
+          {
+            '--msc-ai-assistant-inline-size': inlineSize,
+            '--msc-ai-assistant-block-size': blockSize,
+            '--msc-ai-assistant-inset-inline-start': axisX,
+            '--msc-ai-assistant-inset-block-start': axisY
+          }
+        );
+
+        assistant.pip = fd['pip'] === 'yes' ? true : false;
+        break;
+      }
+    }
+  };
+
+  // events
+  form.addEventListener('input', handler);
+  button.addEventListener('click', handler);
+});
+</script>
+</body>
+
+</html>
