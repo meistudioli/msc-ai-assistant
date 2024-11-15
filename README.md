@@ -1,4 +1,4 @@
-# msc-ai-prompt
+# msc-ai-assistant
 
 [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/msc-ai-assistant) [![DeepScan grade](https://deepscan.io/api/teams/16372/projects/28306/branches/911426/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=16372&pid=28306&bid=911426)
 
