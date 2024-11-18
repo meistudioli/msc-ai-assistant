@@ -976,20 +976,6 @@ export class MscAiAssistant extends HTMLElement {
     return this.#data.session;
   }
 
-  _onKeydownBK(evt) {
-    const { key, shiftKey } = evt;
-    const { btnSubmit } = this.#nodes;
-
-    if (key !== 'Enter') {
-      return;
-    }
-
-    if (!shiftKey) {
-      evt.preventDefault();
-      btnSubmit.click();
-    }
-  }
-
   _onInput() {
     const { textarea } = this.#nodes;
 
