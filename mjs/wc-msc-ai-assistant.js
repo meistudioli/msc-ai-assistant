@@ -18,6 +18,8 @@ import 'https://unpkg.com/dompurify/dist/purify.min.js';
  - marked: https://github.com/markedjs/marked
  - Document Picture-in-Picture API: https://developer.chrome.com/docs/web-platform/document-picture-in-picture
  - DOMPurify: https://github.com/cure53/DOMPurify
+ - HTMLInputElement: selectionEnd property: https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/selectionEnd
+ - https://stackoverflow.com/questions/48448718/insert-a-new-line-after-current-position-in-a-textarea
  */
 
 const defaults = {
@@ -713,7 +715,10 @@ export class MscAiAssistant extends HTMLElement {
     this.#data = {
       controller: '',
       session: '',
-      sessionController: ''
+      sessionController: '',
+      histories: [],
+      currentHistoryIndex: 0,
+      inputed: false
     };
 
     // nodes
@@ -724,6 +729,7 @@ export class MscAiAssistant extends HTMLElement {
       title: this.shadowRoot.querySelector('.ai-assistant__head__p'),
       results: this.shadowRoot.querySelector('.ai-assistant__body_autoscroll__results'),
       form: this.shadowRoot.querySelector('.ai-assistant__body__form'),
+      btnSubmit: this.shadowRoot.querySelector('.ai-assistant__body__form__submit'),
       textarea: this.shadowRoot.querySelector('.ai-assistant__body__form__textarea'),
       autoscroll: this.shadowRoot.querySelector('.ai-assistant__body_autoscroll')
     };
@@ -736,10 +742,13 @@ export class MscAiAssistant extends HTMLElement {
 
     // evts
     this._onSubmit = this._onSubmit.bind(this);
+    this._onKeydown = this._onKeydown.bind(this);
+    this._onInput = this._onInput.bind(this);
   }
 
   async connectedCallback() {
-   const { config, error } = await _wcl.getWCConfig(this);
+    const { config, error } = await _wcl.getWCConfig(this);
+    const { textarea, form } = this.#nodes;
 
     if (error) {
       console.warn(`${_wcl.classToTagName(this.constructor.name)}: ${error}`);
@@ -763,7 +772,14 @@ export class MscAiAssistant extends HTMLElement {
     // evts
     this.#data.controller = new AbortController();
     const signal = this.#data.controller.signal;
-    this.#nodes.form.addEventListener('submit', this._onSubmit, { signal });
+    form.addEventListener('submit', this._onSubmit, { signal });
+    textarea.addEventListener('input', this._onInput, { signal });
+
+    // apply 「shift」+ 「Enter」for line break. (desktop only)
+    const mql = window.matchMedia('(hover: hover)');
+    if (mql.matches) {
+      textarea.addEventListener('keydown', this._onKeydown, { signal, capture: true });
+    }
   }
 
   disconnectedCallback() {
@@ -960,6 +976,59 @@ export class MscAiAssistant extends HTMLElement {
     return this.#data.session;
   }
 
+  _onKeydownBK(evt) {
+    const { key, shiftKey } = evt;
+    const { btnSubmit } = this.#nodes;
+
+    if (key !== 'Enter') {
+      return;
+    }
+
+    if (!shiftKey) {
+      evt.preventDefault();
+      btnSubmit.click();
+    }
+  }
+
+  _onInput() {
+    const { textarea } = this.#nodes;
+
+    this.#data.inputed = !!textarea.value.length;
+  }
+
+  _onKeydown(evt) {
+    const { key, shiftKey } = evt;
+    const { btnSubmit, textarea } = this.#nodes;
+
+    switch (key) {
+      case 'Enter': {
+        if (!shiftKey) {
+          evt.preventDefault();
+          btnSubmit.click();
+        }
+        break;
+      }
+
+      case 'ArrowUp':
+      case 'ArrowDown': {
+        if (this.#data.inputed) {
+          return;
+        }
+
+        evt.preventDefault();
+
+        const { histories, currentHistoryIndex } = this.#data;
+        const count = histories.length;
+        const index = (currentHistoryIndex + (key === 'ArrowUp' ? -1 : 1) + count) % count;
+        
+        this.#data.currentHistoryIndex = index;
+        textarea.value = histories[index];
+        textarea.selectionEnd = histories[index].length;
+        break;
+      }
+    }
+  }
+
   async _onSubmit(evt) {
     const { form, results, textarea, autoscroll } = this.#nodes;
     const prompts = textarea.value.trim();
@@ -991,7 +1060,7 @@ export class MscAiAssistant extends HTMLElement {
 
       for await (const chunk of stream) {
         const newChunk = chunk.startsWith(previousChunk)
-            ? chunk.slice(previousChunk.length) : chunk;
+          ? chunk.slice(previousChunk.length) : chunk;
 
         result += newChunk;
         previousChunk = chunk;
@@ -1010,7 +1079,18 @@ export class MscAiAssistant extends HTMLElement {
       this.#fireEvent(custumEvents.error, { message });
     }
 
+
+    // update histories
+    const index = this.#data.histories.findIndex((value) => value === prompts);
+    if (index !== -1) {
+      this.#data.histories.splice(index, 1);
+    }
+    this.#data.histories.push(prompts);
+    this.#data.currentHistoryIndex = this.#data.histories.length;
+    this.#data.inputed = false;
+
     form.inert = false;
+    textarea.focus();
   }
 
   async show() {
