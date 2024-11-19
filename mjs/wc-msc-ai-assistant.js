@@ -3,7 +3,7 @@ import { _wccss } from './common-css.js';
 import Mustache from './mustache.js';
 import { marked } from 'https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js';
 import 'https://unpkg.com/dompurify/dist/purify.min.js';
-
+import 'https://unpkg.com/msc-circle-progress/mjs/wc-msc-circle-progress.js';
 /*
  reference:
  - Built-in AI: https://developer.chrome.com/docs/ai/built-in
@@ -136,10 +136,6 @@ ${_wccss}
 
     /* popover animation */
     &:popover-open {
-      @starting-style {
-        opacity: 0;
-      }
-
       opacity: 1;
     }
 
@@ -154,6 +150,12 @@ ${_wccss}
       display var(--assistant-duration) allow-discrete;
 
     z-index: var(--assistant-z-index);
+
+    @starting-style {
+      &:popover-open {
+        opacity: 0;
+      }
+    }
 
     .ai-assistant__head {
       display: flex;
@@ -684,6 +686,7 @@ if (CSS?.registerProperty) {
 }
 
 let available = 'no';
+/*
 if (window.ai?.[NS]) {
   const {
     available: A,
@@ -697,6 +700,114 @@ if (window.ai?.[NS]) {
     temperature: defaultTemperature,
     topK: defaultTopK
   };
+}
+*/
+
+const templateProgressSet = `
+<style>
+#built-in-ai-loading-progress {
+  --size: 50px;
+
+  inset-inline-start: calc(100dvi - var(--size) - 8px);
+  inset-block-start: calc(100dvb - var(--size) - 8px);
+
+  inline-size: var(--size);
+  aspect-ratio: 1/1;
+  border-radius: var(--size);
+  background-color: rgba(0 0 0/.8);
+
+  padding: 5px;
+  box-sizing: border-box;
+
+  &::after {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    content: 'AI';
+    color: rgba(255 255 255);
+    font-size: 16px;
+    transform: translate(-50%, -50%);
+  }
+
+  msc-circle-progress {
+    --msc-circle-progress-font-size: 0px;
+    --msc-circle-progress-font-color: rgba(255 255 255);
+    --msc-circle-progress-color: rgba(84 129 236);
+  }
+
+  &:popover-open {
+    opacity: 1;
+    scale: 1;
+  }
+
+  opacity: 0;
+  scale: .001;
+
+  transition-property: opacity,scale,display;
+  transition-duration: 250ms;
+  transition-behavior: allow-discrete;
+
+  @starting-style {
+    &:popover-open {
+      opacity: 0;
+      scale: .001;
+    }
+  }
+}
+</style>
+<div id="built-in-ai-loading-progress" popover>
+  <msc-circle-progress size="5" value="0" max="100" round></msc-circle-progress>
+</div>
+`;
+
+if (window.ai?.[NS]) {
+  const updateConfig = async() => {
+    const {
+      available: A,
+      defaultTemperature,
+      defaultTopK
+    } = await window.ai[NS].capabilities();
+
+    available = A;
+    defaults.config = {
+      systemPrompt: '',
+      temperature: defaultTemperature,
+      topK: defaultTopK
+    };
+  };
+
+  const { available: A } = await window.ai[NS].capabilities();
+
+  if (A === 'after-download') {
+    // setup download progress
+    document.body.insertAdjacentHTML('beforeend', templateProgressSet);
+    const popover = document.querySelector('#built-in-ai-loading-progress');
+    const progress = document.querySelector('#built-in-ai-loading-progress msc-circle-progress');
+
+    popover.showPopover();
+    requestAnimationFrame(() => progress.refresh());
+
+    await window.ai[NS].create({
+      monitor(m) {
+        m.addEventListener('downloadprogress',
+          async (e) => {
+            const { loaded, total } = e;
+            const value = Math.floor((loaded / total) * 100);
+
+            progress.value = value;
+
+            // complete loading
+            if (loaded >= total) {
+              popover.hidePopover();
+              await updateConfig();
+            }
+          }
+        );
+      }
+    });
+  } else {
+    await updateConfig();
+  }
 }
 
 export class MscAiAssistant extends HTMLElement {
