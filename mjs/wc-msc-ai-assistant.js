@@ -626,7 +626,7 @@ templateProgressSet.innerHTML = `
   }
 }
 </style>
-<div id="{{id}}" class="built-in-ai-loading-progress" popover>
+<div id="{{id}}" class="built-in-ai-loading-progress" popover="manual">
   <msc-circle-progress size="5" value="0" max="100" round></msc-circle-progress>
 </div>
 `;
