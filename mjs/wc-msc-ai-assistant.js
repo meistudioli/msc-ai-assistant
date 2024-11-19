@@ -764,11 +764,11 @@ if (window.ai?.[NS]) {
 
   if (A === 'after-download') {
     // setup download progress
-    const id = _wcl.getUUID();
+    const id = `ps-${_wcl.getUUID()}`;
     const progressSetString = Mustache.render(templateProgressSet.innerHTML, { id });
     document.body.insertAdjacentHTML('beforeend', progressSetString);
-    const popover = document.querySelector(`#{id}`);
-    const progress = document.querySelector(`#{id} msc-circle-progress`);
+    const popover = document.querySelector(`#${id}`);
+    const progress = document.querySelector(`#${id} msc-circle-progress`);
 
     popover.showPopover();
     requestAnimationFrame(() => progress.refresh());
