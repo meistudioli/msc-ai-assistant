@@ -573,6 +573,64 @@ templateResultUnit.innerHTML = `
 </div>
 `;
 
+const templateProgressSet = document.createElement('template');
+templateProgressSet.innerHTML = `
+<style>
+.built-in-ai-loading-progress {
+  --size: 50px;
+
+  inset-inline-start: calc(100dvi - var(--size) - 8px);
+  inset-block-start: calc(100dvb - var(--size) - 8px);
+
+  inline-size: var(--size);
+  aspect-ratio: 1/1;
+  border-radius: var(--size);
+  background-color: rgba(0 0 0/.8);
+
+  padding: 5px;
+  box-sizing: border-box;
+
+  &::after {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    content: 'AI';
+    color: rgba(255 255 255);
+    font-size: 16px;
+    transform: translate(-50%, -50%);
+  }
+
+  msc-circle-progress {
+    --msc-circle-progress-font-size: 0px;
+    --msc-circle-progress-font-color: rgba(255 255 255);
+    --msc-circle-progress-color: rgba(84 129 236);
+  }
+
+  &:popover-open {
+    opacity: 1;
+    scale: 1;
+  }
+
+  opacity: 0;
+  scale: .001;
+
+  transition-property: opacity,scale,display;
+  transition-duration: 250ms;
+  transition-behavior: allow-discrete;
+
+  @starting-style {
+    &:popover-open {
+      opacity: 0;
+      scale: .001;
+    }
+  }
+}
+</style>
+<div id="{{id}}" class="built-in-ai-loading-progress" popover>
+  <msc-circle-progress size="5" value="0" max="100" round></msc-circle-progress>
+</div>
+`;
+
 // Houdini Props and Vals, https://web.dev/at-property/
 if (CSS?.registerProperty) {
   try {
@@ -686,80 +744,6 @@ if (CSS?.registerProperty) {
 }
 
 let available = 'no';
-/*
-if (window.ai?.[NS]) {
-  const {
-    available: A,
-    defaultTemperature,
-    defaultTopK
-  } = await window.ai[NS].capabilities();
-
-  available = A;
-  defaults.config = {
-    systemPrompt: '',
-    temperature: defaultTemperature,
-    topK: defaultTopK
-  };
-}
-*/
-
-const templateProgressSet = `
-<style>
-#built-in-ai-loading-progress {
-  --size: 50px;
-
-  inset-inline-start: calc(100dvi - var(--size) - 8px);
-  inset-block-start: calc(100dvb - var(--size) - 8px);
-
-  inline-size: var(--size);
-  aspect-ratio: 1/1;
-  border-radius: var(--size);
-  background-color: rgba(0 0 0/.8);
-
-  padding: 5px;
-  box-sizing: border-box;
-
-  &::after {
-    position: absolute;
-    inset-inline-start: 50%;
-    inset-block-start: 50%;
-    content: 'AI';
-    color: rgba(255 255 255);
-    font-size: 16px;
-    transform: translate(-50%, -50%);
-  }
-
-  msc-circle-progress {
-    --msc-circle-progress-font-size: 0px;
-    --msc-circle-progress-font-color: rgba(255 255 255);
-    --msc-circle-progress-color: rgba(84 129 236);
-  }
-
-  &:popover-open {
-    opacity: 1;
-    scale: 1;
-  }
-
-  opacity: 0;
-  scale: .001;
-
-  transition-property: opacity,scale,display;
-  transition-duration: 250ms;
-  transition-behavior: allow-discrete;
-
-  @starting-style {
-    &:popover-open {
-      opacity: 0;
-      scale: .001;
-    }
-  }
-}
-</style>
-<div id="built-in-ai-loading-progress" popover>
-  <msc-circle-progress size="5" value="0" max="100" round></msc-circle-progress>
-</div>
-`;
-
 if (window.ai?.[NS]) {
   const updateConfig = async() => {
     const {
@@ -780,9 +764,11 @@ if (window.ai?.[NS]) {
 
   if (A === 'after-download') {
     // setup download progress
-    document.body.insertAdjacentHTML('beforeend', templateProgressSet);
-    const popover = document.querySelector('#built-in-ai-loading-progress');
-    const progress = document.querySelector('#built-in-ai-loading-progress msc-circle-progress');
+    const id = _wcl.getUUID();
+    const progressSetString = Mustache.render(templateProgressSet.innerHTML, { id });
+    document.body.insertAdjacentHTML('beforeend', progressSetString);
+    const popover = document.querySelector(`#{id}`);
+    const progress = document.querySelector(`#{id} msc-circle-progress`);
 
     popover.showPopover();
     requestAnimationFrame(() => progress.refresh());

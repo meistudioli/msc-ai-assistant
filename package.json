@@ -1,6 +1,6 @@
 {
   "name": "msc-ai-assistant",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "<msc-ai-assistant /> is a web component based on Chrome Built-in AI Prompt API. Web developers could use <msc-ai-assistant /> to help user consult anything they like to know.",
   "main": "index.html",
   "scripts": {
