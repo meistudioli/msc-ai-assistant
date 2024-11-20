@@ -137,9 +137,16 @@ ${_wccss}
     /* popover animation */
     &:popover-open {
       opacity: 1;
+      inset-block-start: var(--assistant-inset-block-start);
+
+      @starting-style {
+        opacity: 0;
+        inset-block-start: calc(var(--assistant-inset-block-start) + 20px);
+      }
     }
 
     opacity: 0;
+    inset-block-start: calc(var(--assistant-inset-block-start) - 50px);
 
     will-change: inline-size,inset-inline-start,inset-block-start,opacity,display;
     transition:
@@ -150,12 +157,6 @@ ${_wccss}
       display var(--assistant-duration) allow-discrete;
 
     z-index: var(--assistant-z-index);
-
-    @starting-style {
-      &:popover-open {
-        opacity: 0;
-      }
-    }
 
     .ai-assistant__head {
       display: flex;
@@ -1029,6 +1030,10 @@ export class MscAiAssistant extends HTMLElement {
 
   get pip() {
     return this.#config.pip;
+  }
+
+  get open() {
+    return this.#nodes.assistant.matches(':popover-open');
   }
 
   get available() {

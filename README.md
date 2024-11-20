@@ -175,6 +175,7 @@ Set localization for title or form information.
 | config | Object | Getter / Setter Prompt API create config. Developers could set `systemPrompt`、`temperature` and `topK` here. |
 | pip | Boolean | Getter / Setter pip. Turn <msc-ai-assistant /> into picture-in-picture mode or not. It is `false` by default. |
 | l10n | Object | Getter / Setter localization for title or or form information. Developers could set `subject`、`placeholder` and `error` here. |
+| open | Boolean | Getter <msc-ai-assistant /> open or not. |
 | available | String | Getter available. Web developers will get "`no`" if current browser doesn't support Build-in AI. |
 
 ## Mathods
@@ -192,8 +193,7 @@ Set localization for title or form information.
 
 ## Reference
 - [AI on Chrome > Built-in AI](https://developer.chrome.com/docs/ai/built-in)
-- [Join the early preview program
-](https://docs.google.com/forms/d/e/1FAIpQLSfZXeiwj9KO9jMctffHPym88ln12xNWCrVkMY_u06WfSTulQg/viewform)
+- [Join the early preview program](https://docs.google.com/forms/d/e/1FAIpQLSfZXeiwj9KO9jMctffHPym88ln12xNWCrVkMY_u06WfSTulQg/viewform)
 - [Built-in AI > Prompt API](https://docs.google.com/document/d/1VG8HIyz361zGduWgNG7R_R8Xkv0OOJ8b5C9QKeCjU0c/edit?tab=t.0)
 - [&lt;msc-ai-assistant /> demo](https://blog.lalacube.com/mei/webComponent_msc-ai-assistant.html)
 - [YouTube tutorial](https://youtu.be/Pn6tm3YSZ1U)
