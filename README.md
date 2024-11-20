@@ -173,9 +173,9 @@ Set localization for title or form information.
 | Property Name | Type | Description |
 | ----------- | ----------- | ----------- |
 | config | Object | Getter / Setter Prompt API create config. Developers could set `systemPrompt`、`temperature` and `topK` here. |
-| pip | Boolean | Getter / Setter pip. Turn <msc-ai-assistant /> into picture-in-picture mode or not. It is `false` by default. |
+| pip | Boolean | Getter / Setter pip. Turn &lt;msc-ai-assistant /> into picture-in-picture mode or not. It is `false` by default. |
 | l10n | Object | Getter / Setter localization for title or or form information. Developers could set `subject`、`placeholder` and `error` here. |
-| open | Boolean | Getter <msc-ai-assistant /> open or not. |
+| open | Boolean | Getter &lt;msc-ai-assistant /> open or not. |
 | available | String | Getter available. Web developers will get "`no`" if current browser doesn't support Build-in AI. |
 
 ## Mathods
